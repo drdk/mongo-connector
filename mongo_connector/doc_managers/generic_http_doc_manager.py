@@ -47,13 +47,13 @@ class DocManager(DocManagerBase):
     Receives documents from an OplogThread and sends updates to Endpoint.
     """
 
-    def __init__(self, url, unique_key='_id', **kwargs):
-				 
-		self.unique_key = unique_key
-		self.url = url
-		self.connection = http.client.HTTPSConnection(self.url)
-		self.headers = {'Content-type': 'application/json'}
-			
+    def __init__(self, url, auto_commit_interval=DEFAULT_COMMIT_INTERVAL, unique_key='_id', **kwargs):
+ 
+        self.unique_key = unique_key
+        self.url = url
+        self.connection = http.client.HTTPSConnection(self.url)
+        self.headers = {'Content-type': 'application/json'}
+
         self.auto_commit_interval = auto_commit_interval
         self.meta_index_name = meta_index_name
         self.meta_type = meta_type
@@ -82,38 +82,40 @@ class DocManager(DocManagerBase):
         matches that of doc.
         """
         self.commit()
-		updated = self.apply_update(document, update_spec)
+        updated = self.apply_update(document, update_spec)
         self.upsert(updated, namespace, timestamp)
         return updated
 
     @wrap_exceptions
     def upsert(self, doc, namespace, timestamp):
-		message = {
-			'action' : 'CU',
-			'body' : doc			
-		}
-		
-		json_message = json.dumps(message)
-		LOG.info('upsert on ' + doc[self.unique_key] + ' called')
-		# self.connection.request('POST', '/markdown', json_message, self.headers)
+       message = {
+        'action' : 'CU',
+        'body' : doc
+    }
+
+    json_message = json.dumps(message)
+    LOG.info('upsert on ' + doc[self.unique_key] + ' called')
+    # self.connection.request('POST', '/markdown', json_message, self.headers)
 
     @wrap_exceptions
     def remove(self, document_id, namespace, timestamp):
         message = {
-			'action' : 'D'
-			'deleted_id' : document_id
-		}
-		
-		json_message = json.dumps(message)	
-		LOG.info('remove on ' + document_id + ' called')
-		# self.connection.request('POST', '/markdown', json_message, self.headers)
+        'action' : 'D',
+        'deleted_id' : document_id
+    }
+
+    json_message = json.dumps(message)
+    LOG.info('remove on ' + document_id + ' called')
+    # self.connection.request('POST', '/markdown', json_message, self.headers)
 
     def commit(self):
-		pass
+        """ Performs a commit
+        """
+        return
 
     @wrap_exceptions
     def get_last_doc(self):
         """Get the most recently modified document from endpoint.
-		right now, we do not have an endpoint for this, so just return None"""
-		
+        right now, we do not have an endpoint for this, so just return None"""
+
         return None
