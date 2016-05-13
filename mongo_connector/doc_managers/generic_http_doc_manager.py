@@ -19,7 +19,7 @@ the defined HTTP endpoint.
 """
 import base64
 import logging
-import http.client
+#import http.client
 import json
 
 from threading import Timer
@@ -34,11 +34,8 @@ from mongo_connector.util import exception_wrapper, retry_until_ok
 from mongo_connector.doc_managers.doc_manager_base import DocManagerBase
 from mongo_connector.doc_managers.formatters import DefaultDocumentFormatter
 
-wrap_exceptions = exception_wrapper({
-    es_exceptions.ConnectionError: errors.ConnectionFailed,
-    es_exceptions.TransportError: errors.OperationFailed,
-    es_exceptions.NotFoundError: errors.OperationFailed,
-    es_exceptions.RequestError: errors.OperationFailed})
+
+wrap_exceptions = exception_wrapper({    })
 
 LOG = logging.getLogger(__name__)
 
@@ -51,7 +48,7 @@ class DocManager(DocManagerBase):
  
         self.unique_key = unique_key
         self.url = url
-        self.connection = http.client.HTTPSConnection(self.url)
+        #self.connection = http.client.HTTPSConnection(self.url)
         self.headers = {'Content-type': 'application/json'}
 
         self.auto_commit_interval = auto_commit_interval

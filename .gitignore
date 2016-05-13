@@ -4,3 +4,5 @@
 /test/data
 /test/logs
 /dist
+/build/
+setuptools-*
