@@ -85,25 +85,25 @@ class DocManager(DocManagerBase):
 
     @wrap_exceptions
     def upsert(self, doc, namespace, timestamp):
-       message = {
+        message = {
         'action' : 'CU',
         'body' : doc
-    }
+        }
 
-    json_message = json.dumps(message)
-    LOG.info('upsert on ' + doc[self.unique_key] + ' called')
-    # self.connection.request('POST', '/markdown', json_message, self.headers)
+        json_message = json.dumps(message)
+        LOG.info('upsert on ' + doc[self.unique_key] + ' called')
+        # self.connection.request('POST', '/markdown', json_message, self.headers)
 
     @wrap_exceptions
     def remove(self, document_id, namespace, timestamp):
         message = {
         'action' : 'D',
         'deleted_id' : document_id
-    }
+        }
 
-    json_message = json.dumps(message)
-    LOG.info('remove on ' + document_id + ' called')
-    # self.connection.request('POST', '/markdown', json_message, self.headers)
+        json_message = json.dumps(message)
+        LOG.info('remove on ' + document_id + ' called')
+        # self.connection.request('POST', '/markdown', json_message, self.headers)
 
     def commit(self):
         """ Performs a commit
