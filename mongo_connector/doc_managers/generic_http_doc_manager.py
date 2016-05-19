@@ -97,11 +97,11 @@ class DocManager(DocManagerBase):
         # self.upsert(updated, namespace, timestamp)
         # return updated
 
-    def _doc_to_json(self, doc, _id, action, timestamp)
+    def _doc_to_json(self, doc, id, action, timestamp)
         message = {
         'action' : action,
         '_ts' : timestamp,
-        '_id' : _id,
+        '_id' : id,
         'body' : doc
         }
         return json.dumps(message, default=json_util.default)
