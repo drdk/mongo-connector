@@ -117,7 +117,7 @@ class DocManager(DocManagerBase):
     def upsert(self, doc, namespace, timestamp):
         jsonmessages = []
         json_message = self._doc_to_json(doc, str(doc[self.unique_key]), 'C', timestamp)
-        jsonmessages.append(json_message)
+        jsonmessages.extend(json_message)
         self.connection.connect()
         self.connection.request('POST', '/loglistener/api/log', json.dumps(jsonmessages, default=json_util.default), self.headers)
         response = self.connection.getresponse()
@@ -132,7 +132,7 @@ class DocManager(DocManagerBase):
             batch = list(next(jsondocs) for i in range(self.chunk_size))
             while batch:
                 messages = []
-                messages.append(batch)
+                messages.extend(batch)
                 jsonmessages = json.dumps(messages, default=json_util.default)
                 self._send_upsert(jsonmessages)
                 batch = list(next(jsondocs) for i in range(self.chunk_size))
