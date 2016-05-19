@@ -97,7 +97,7 @@ class DocManager(DocManagerBase):
         # self.upsert(updated, namespace, timestamp)
         # return updated
 
-    def _doc_to_json(self, doc = None, _id, action, timestamp)
+    def _doc_to_json(self, doc, _id, action, timestamp)
         message = {
         'action' : action,
         '_ts' : timestamp,
@@ -125,7 +125,7 @@ class DocManager(DocManagerBase):
     @wrap_exceptions
     def bulk_upsert(self, docs, namespace, timestamp)
         jsonmessages = []
-        jsondocs = (self._doc_to_json(d, namespace, timestamp) for d in docs)
+        jsondocs = (self._doc_to_json(d, str(d[self.unique_key]), 'C', timestamp) for d in docs)
         if self.chunk_size > 0:
             batch = list(next(jsondocs) for i in range(self.chunk_size))
             while batch:
