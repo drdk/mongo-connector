@@ -97,7 +97,7 @@ class DocManager(DocManagerBase):
         # self.upsert(updated, namespace, timestamp)
         # return updated
 
-    def _doc_to_json(self, doc, id, action, timestamp)
+    def _doc_to_json(self, doc, id, action, timestamp):
         message = {
         'action' : action,
         '_ts' : timestamp,
@@ -106,7 +106,7 @@ class DocManager(DocManagerBase):
         }
         return json.dumps(message, default=json_util.default)
 
-    def _send_upsert(self, json)
+    def _send_upsert(self, json):
         self.connection.connect()
         self.connection.request('POST', '/loglistener/api/log', json, self.headers)
         response = self.connection.getresponse()
