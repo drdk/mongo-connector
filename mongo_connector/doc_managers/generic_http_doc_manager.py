@@ -104,7 +104,7 @@ class DocManager(DocManagerBase):
         '_id' : id,
         'body' : doc
         }
-        return json.dumps(message, default=json_util.default)
+        return message
 
     def _send_upsert(self, json):
         self.connection.connect()
@@ -115,9 +115,11 @@ class DocManager(DocManagerBase):
 
     @wrap_exceptions
     def upsert(self, doc, namespace, timestamp):
+        jsonmessages = []
         json_message = self._doc_to_json(doc, str(doc[self.unique_key]), 'C', timestamp)
+        jsonmessages.append(json_message)
         self.connection.connect()
-        self.connection.request('POST', '/loglistener/api/log', json_message, self.headers)
+        self.connection.request('POST', '/loglistener/api/log', json.dumps(jsonmessages, default=json_util.default), self.headers)
         response = self.connection.getresponse()
         r = response.read()
         self.connection.close()
@@ -129,8 +131,9 @@ class DocManager(DocManagerBase):
         if self.chunk_size > 0:
             batch = list(next(jsondocs) for i in range(self.chunk_size))
             while batch:
-                jsonmessages = []
-                jsonmessages.append(batch)
+                messages = []
+                messages.append(batch)
+                jsonmessages = json.dumps(messages, default=json_util.default)
                 self._send_upsert(jsonmessages)
                 batch = list(next(jsondocs) for i in range(self.chunk_size))
         else:
