@@ -123,7 +123,7 @@ class DocManager(DocManagerBase):
         self.connection.close()
 
     @wrap_exceptions
-    def bulk_upsert(self, docs, namespace, timestamp)
+    def bulk_upsert(self, docs, namespace, timestamp):
         jsonmessages = []
         jsondocs = (self._doc_to_json(d, str(d[self.unique_key]), 'C', timestamp) for d in docs)
         if self.chunk_size > 0:
