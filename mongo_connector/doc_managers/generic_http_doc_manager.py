@@ -84,9 +84,11 @@ class DocManager(DocManagerBase):
         matches that of doc.
         """
 
+        jsonmessages = []
         json_message = self._doc_to_json(update_spec, str(document_id), 'U', timestamp)
+        jsonmessages.extend(json_message)
         self.connection.connect()
-        self.connection.request('POST', '/loglistener/api/log', json_message, self.headers)
+        self.connection.request('POST', '/loglistener/api/log', json.dumps(jsonmessages, default=json_util.default), self.headers)
         response = self.connection.getresponse()
         if response.status == 500:
             LOG.info(response.msg)
