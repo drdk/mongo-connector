@@ -43,10 +43,11 @@ LOG = logging.getLogger(__name__)
 class DateTimeDocumentFormatter(DefaultDocumentFormatter):
 
     def transform_value(self, value):
-        if isinstance(value, datetime.datetime):
+        LOG.info('transforming value')
+        if isinstance(value, datetime):
             return value.strftime('%Y-%m-%dT%H:%M:%S:%f')[:-3] + 'Z'
         else:
-            return super(DateTimeDocumentFormatter, self).trasnform_value(value)
+            return super(DateTimeDocumentFormatter, self).transform_value(value)
 
 class DocManager(DocManagerBase):
     """Implementation of the DocManager interface.
@@ -80,56 +81,22 @@ class DocManager(DocManagerBase):
 
     @wrap_exceptions
     def update(self, document_id, update_spec, namespace, timestamp):
-        """Apply updates given in update_spec to the document whose id
-        matches that of doc.
-        """
-
-        jsonmessages = []
-        json_message = self._doc_to_json(update_spec, str(document_id), 'U', timestamp)
-        jsonmessages.extend(json_message)
-        self.connection.connect()
-        self.connection.request('POST', '/loglistener/api/log', json.dumps(jsonmessages, default=json_util.default), self.headers)
-        response = self.connection.getresponse()
-        if response.status == 500:
-            LOG.info(response.msg)
-        r = response.read()
-        self.connection.close()
-
-        # self.commit()
-        # updated = self.apply_update(document, update_spec)
-        # self.upsert(updated, namespace, timestamp)
-        # return updated
-
-    def _doc_to_json(self, doc, id, action, timestamp):
-        message = {
-        'action' : action,
-        '_ts' : timestamp,
-        '_id' : id,
-        'body' : doc
-        }
-        return message
-
-    def _send_upsert(self, json):
-        self.connection.connect()
-        self.connection.request('POST', '/loglistener/api/log', json, self.headers)
-        response = self.connection.getresponse()
-        r = response.read()
-        self.connection.close()
+        messages = []
+        message = self._doc_to_json(update_spec, str(document_id), 'U', timestamp)
+        messages.extend(json_message)
+        jsonmessages = json.dumps(messages, default=json_util.default)
+        self._send_upsert(jsonmessages)
 
     @wrap_exceptions
     def upsert(self, doc, namespace, timestamp):
-        jsonmessages = []
-        json_message = self._doc_to_json(doc, str(doc[self.unique_key]), 'C', timestamp)
-        jsonmessages.extend(json_message)
-        self.connection.connect()
-        self.connection.request('POST', '/loglistener/api/log', json.dumps(jsonmessages, default=json_util.default), self.headers)
-        response = self.connection.getresponse()
-        r = response.read()
-        self.connection.close()
+        messages = []
+        message = self._doc_to_json(doc, str(doc[self.unique_key]), 'C', timestamp)
+        messages.extend(message)
+        jsonmessages = json.dumps(messages, default=json_util.default)
+        self._send_upsert(jsonmessages)
 
     @wrap_exceptions
     def bulk_upsert(self, docs, namespace, timestamp):
-        jsonmessages = []
         jsondocs = (self._doc_to_json(d, str(d[self.unique_key]), 'C', timestamp) for d in docs)
         if self.chunk_size > 0:
             batch = list(next(jsondocs) for i in range(self.chunk_size))
@@ -144,12 +111,11 @@ class DocManager(DocManagerBase):
 
     @wrap_exceptions
     def remove(self, document_id, namespace, timestamp):
-        json_message = self._doc_to_json(None, document_id, 'D', timestamp)
-        self.connection.connect()
-        self.connection.request('POST', '/loglistener/api/log', json_message, self.headers)
-        response = self.connection.getresponse()
-        r = response.read()
-        self.connection.close()
+        messages = []        
+        message = self._doc_to_json(None, document_id, 'D', timestamp)
+        messages.extend(message)
+        jsonmessages = json.dumps(messages, default=json_util.default)
+        self._send_upsert(jsonmessages)
 
     def commit(self):
         pass
@@ -171,3 +137,21 @@ class DocManager(DocManagerBase):
             return None
         else:
             return dict
+
+    def _doc_to_json(self, doc, id, action, timestamp):
+        message = {
+        'action' : action,
+        '_ts' : timestamp,
+        '_id' : id,
+        'body' : doc
+        }
+        return message
+
+    def _send_upsert(self, json):
+        self.connection.connect()
+        self.connection.request('POST', '/loglistener/api/log', json, self.headers)
+        response = self.connection.getresponse()
+        if response.status == 500:
+            LOG.info(response.msg)
+        r = response.read()
+        self.connection.close()
