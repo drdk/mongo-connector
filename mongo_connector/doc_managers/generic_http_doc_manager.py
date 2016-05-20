@@ -84,7 +84,7 @@ class DocManager(DocManagerBase):
         matches that of doc.
         """
 
-        json_message = self._doc_to_json(doc, str(document_id), 'U', timestamp)
+        json_message = self._doc_to_json(update_spec, str(document_id), 'U', timestamp)
         self.connection.connect()
         self.connection.request('POST', '/loglistener/api/log', json_message, self.headers)
         response = self.connection.getresponse()
