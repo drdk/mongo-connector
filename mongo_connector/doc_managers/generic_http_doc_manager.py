@@ -83,7 +83,7 @@ class DocManager(DocManagerBase):
     def update(self, document_id, update_spec, namespace, timestamp):
         messages = []
         message = self._doc_to_json(update_spec, str(document_id), 'U', timestamp)
-        messages.extend(json_message)
+        messages.extend(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
 
