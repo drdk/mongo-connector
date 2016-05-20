@@ -40,6 +40,14 @@ wrap_exceptions = exception_wrapper({    })
 
 LOG = logging.getLogger(__name__)
 
+class DateTimeDocumentFormatter(DefaultDocumentFormatter):
+
+    def transform_value(self, value):
+        if isinstance(value, datetime.datetime):
+            return value.strftime('%Y-%m-%dT%H:%M:%S:%f')[:-3] + 'Z'
+        elif
+            return super(DateTimeDocumentFormatter, self).trasnform_value(value)
+
 class DocManager(DocManagerBase):
     """Implementation of the DocManager interface.
     Receives documents from an OplogThread and sends updates to Endpoint.
@@ -55,7 +63,7 @@ class DocManager(DocManagerBase):
         self.auto_commit_interval = auto_commit_interval
         self.unique_key = unique_key
         self.chunk_size = chunk_size
-        self._formatter = DefaultDocumentFormatter()
+        self._formatter = DateTimeDocumentFormatter()
 
         self.has_attachment_mapping = False
 
