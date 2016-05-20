@@ -45,7 +45,7 @@ class DateTimeDocumentFormatter(DefaultDocumentFormatter):
     def transform_value(self, value):
         if isinstance(value, datetime.datetime):
             return value.strftime('%Y-%m-%dT%H:%M:%S:%f')[:-3] + 'Z'
-        elif
+        else:
             return super(DateTimeDocumentFormatter, self).trasnform_value(value)
 
 class DocManager(DocManagerBase):
