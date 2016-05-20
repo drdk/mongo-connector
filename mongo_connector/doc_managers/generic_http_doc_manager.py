@@ -82,7 +82,7 @@ class DocManager(DocManagerBase):
     @wrap_exceptions
     def update(self, document_id, update_spec, namespace, timestamp):
         messages = []
-        message = self._doc_to_json(update_spec, str(document_id), 'U', timestamp)
+        message = self._doc_to_json(self._formatter.format_document(update_spec), str(document_id), 'U', timestamp)
         messages.extend(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
@@ -90,14 +90,14 @@ class DocManager(DocManagerBase):
     @wrap_exceptions
     def upsert(self, doc, namespace, timestamp):
         messages = []
-        message = self._doc_to_json(doc, str(doc[self.unique_key]), 'C', timestamp)
+        message = self._doc_to_json(self._formatter.format_document(doc), str(doc[self.unique_key]), 'C', timestamp)
         messages.extend(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
 
     @wrap_exceptions
     def bulk_upsert(self, docs, namespace, timestamp):
-        jsondocs = (self._doc_to_json(d, str(d[self.unique_key]), 'C', timestamp) for d in docs)
+        jsondocs = (self._doc_to_json(self._formatter.format_document(d), str(d[self.unique_key]), 'C', timestamp) for d in docs)
         if self.chunk_size > 0:
             batch = list(next(jsondocs) for i in range(self.chunk_size))
             while batch:
