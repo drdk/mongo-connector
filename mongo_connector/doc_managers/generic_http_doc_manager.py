@@ -83,15 +83,8 @@ class DocManager(DocManagerBase):
         """Apply updates given in update_spec to the document whose id
         matches that of doc.
         """
-        
-        message = {
-        'action' : 'U',
-        '_id' : str(document_id),
-        '_ts' : timestamp,
-        'body' : update_spec
-        }
 
-        json_message = self.serialize_to_json(message)
+        json_message = self._doc_to_json(doc, str(document_id), 'U', timestamp)
         self.connection.connect()
         self.connection.request('POST', '/loglistener/api/log', json_message, self.headers)
         response = self.connection.getresponse()
