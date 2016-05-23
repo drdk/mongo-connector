@@ -43,7 +43,6 @@ LOG = logging.getLogger(__name__)
 class DateTimeDocumentFormatter(DefaultDocumentFormatter):
 
     def transform_value(self, value):
-        LOG.info('transforming value')
         if isinstance(value, datetime):
             return value.strftime('%Y-%m-%dT%H:%M:%S:%f')[:-3] + 'Z'
         else:
@@ -83,7 +82,7 @@ class DocManager(DocManagerBase):
     def update(self, document_id, update_spec, namespace, timestamp):
         messages = []
         message = self._doc_to_json(self._formatter.format_document(update_spec), str(document_id), 'U', timestamp)
-        messages.extend(message)
+        messages.append(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
 
@@ -91,7 +90,7 @@ class DocManager(DocManagerBase):
     def upsert(self, doc, namespace, timestamp):
         messages = []
         message = self._doc_to_json(self._formatter.format_document(doc), str(doc[self.unique_key]), 'C', timestamp)
-        messages.extend(message)
+        messages.append(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
 
@@ -113,7 +112,7 @@ class DocManager(DocManagerBase):
     def remove(self, document_id, namespace, timestamp):
         messages = []        
         message = self._doc_to_json(None, document_id, 'D', timestamp)
-        messages.extend(message)
+        messages.append(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
 
