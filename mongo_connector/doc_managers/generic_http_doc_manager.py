@@ -111,7 +111,7 @@ class DocManager(DocManagerBase):
     @wrap_exceptions
     def remove(self, document_id, namespace, timestamp):
         messages = []        
-        message = self._doc_to_json(None, document_id, 'D', timestamp)
+        message = self._doc_to_json(None, str(document_id), 'D', timestamp)
         messages.append(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
