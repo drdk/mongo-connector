@@ -137,11 +137,11 @@ class DocManager(DocManagerBase):
         else:
             return dict
 
-    def _doc_to_json(self, doc, id, action, timestamp):
+    def _doc_to_json(self, doc, document_id, action, timestamp):
         message = {
         'action' : action,
         '_ts' : timestamp,
-        '_id' : id,
+        '_id' : document_id,
         'body' : doc
         }
         return message
