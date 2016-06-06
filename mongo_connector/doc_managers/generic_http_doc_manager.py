@@ -125,9 +125,9 @@ class DocManager(DocManagerBase):
     @wrap_exceptions
     def get_last_doc(self):
         """Get the most recently modified document timestamp from endpoint.
-        """		
-		if not os.path.exists('generic_http_doc_manager_maxtouched')
-		    try:
+        """
+        if not os.path.exists('generic_http_doc_manager_maxtouched')
+        try:
                 # Create maxtouched progress file
                 open('generic_http_doc_manager_maxtouched', "w").close()
             except IOError as e:
@@ -135,7 +135,7 @@ class DocManager(DocManagerBase):
                             "create a maxtouched log: %s" %
                             str(e))
                 sys.exit(2)
-		
+
         with open('generic_http_doc_manager_maxtouched', 'r') as progress_file:
             try:
                 timestamp = progress_file.readline;
