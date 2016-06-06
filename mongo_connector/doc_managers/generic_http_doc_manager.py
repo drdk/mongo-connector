@@ -139,7 +139,7 @@ class DocManager(DocManagerBase):
 
         with open('generic_http_doc_manager_maxtouched', 'r') as progress_file:
             try:
-                timestamp = progress_file.readline;
+                timestamp = progress_file.readline();
             except ValueError:
                 LOG.exception('Cannot read generic http doc manager max touched file')
                 return
