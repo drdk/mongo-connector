@@ -148,7 +148,7 @@ class DocManager(DocManagerBase):
             return None
         else:
             dict = []
-            newitem = {'_ts' : timestamp}
+            newitem = {'_ts' : int(timestamp)}
             dict.append(newitem)
             return dict
 
