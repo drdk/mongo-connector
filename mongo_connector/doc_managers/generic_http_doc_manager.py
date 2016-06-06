@@ -147,7 +147,10 @@ class DocManager(DocManagerBase):
         if not timestamp or timestamp == -1:
             return None
         else:
-            return timestamp
+            dict = []
+            newitem = {'_ts' : timestamp}
+            dict.append(newitem)
+            return dict
 
     def _doc_to_json(self, doc, document_id, action, timestamp):
         message = {
