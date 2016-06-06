@@ -128,7 +128,7 @@ class DocManager(DocManagerBase):
         """Get the most recently modified document timestamp from endpoint.
         """
         if not os.path.exists('generic_http_doc_manager_maxtouched'):
-        try:
+            try:
                 # Create maxtouched progress file
                 open('generic_http_doc_manager_maxtouched', "w").close()
             except IOError as e:
