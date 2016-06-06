@@ -159,7 +159,7 @@ class DocManager(DocManagerBase):
 
     def _send_upsert(self, json):
         self.connection.connect()
-        self.connection.request('POST', '/loglistener/api/log', json, self.headers)
+        self.connection.request('POST', '/od-changelog-in/api', json, self.headers)
         response = self.connection.getresponse()
         if response.status == 500:
             LOG.info(response.msg)
