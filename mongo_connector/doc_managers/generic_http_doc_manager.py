@@ -45,7 +45,8 @@ class DateTimeDocumentFormatter(DefaultDocumentFormatter):
 
     def transform_value(self, value):
         if isinstance(value, datetime):
-            return value.strftime('%Y-%m-%dT%H:%M:%S:%f')[:-3] + 'Z'
+            iso = value.isoformat()
+            return iso[:-3] + 'Z'
         else:
             return super(DateTimeDocumentFormatter, self).transform_value(value)
 
