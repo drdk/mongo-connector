@@ -127,7 +127,7 @@ class DocManager(DocManagerBase):
     def get_last_doc(self):
         """Get the most recently modified document timestamp from endpoint.
         """
-        if not os.path.exists('generic_http_doc_manager_maxtouched')
+        if not os.path.exists('generic_http_doc_manager_maxtouched'):
         try:
                 # Create maxtouched progress file
                 open('generic_http_doc_manager_maxtouched', "w").close()
