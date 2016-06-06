@@ -125,17 +125,28 @@ class DocManager(DocManagerBase):
     @wrap_exceptions
     def get_last_doc(self):
         """Get the most recently modified document timestamp from endpoint.
-        """
-        self.connection.connect()
-        self.connection.request('GET', '/loglistener/api/log/max-touched')
-        response = self.connection.getresponse()
-        r = response.read()
-        dict = json.loads(r)
-        self.connection.close()
-        if dict['_ts'] == -1:
+        """		
+		if not os.path.exists('generic_http_doc_manager_maxtouched')
+		    try:
+                # Create maxtouched progress file
+                open('generic_http_doc_manager_maxtouched', "w").close()
+            except IOError as e:
+                LOG.critical("MongoConnector: Could not "
+                            "create a maxtouched log: %s" %
+                            str(e))
+                sys.exit(2)
+		
+        with open('generic_http_doc_manager_maxtouched', 'r') as progress_file:
+            try:
+                timestamp = progress_file.readline;
+            except ValueError:
+                LOG.exception('Cannot read generic http doc manager max touched file')
+                return
+        
+        if not timestamp or timestamp == -1:
             return None
         else:
-            return dict
+            return timestamp
 
     def _doc_to_json(self, doc, document_id, action, timestamp):
         message = {
