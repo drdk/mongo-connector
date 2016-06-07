@@ -167,6 +167,6 @@ class DocManager(DocManagerBase):
         self.connection.request('POST', '/od-changelog-in/api', json, self.headers)
         response = self.connection.getresponse()
         if response.status == 500:
-            LOG.info(response.msg)
+            LOG.exception(response.msg)
         r = response.read()
         self.connection.close()
