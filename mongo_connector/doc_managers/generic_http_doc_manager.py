@@ -126,8 +126,8 @@ class DocManager(DocManagerBase):
     def write_last_doc_timestamp(self, timestamp):
         with open('generic_http_doc_manager_maxtouched', 'w') as progress_file:
             data = progress_file.readlines()
-			data[0] = timestamp
-			progress_file.writelines(data)			
+            data[0] = timestamp
+            progress_file.writelines(data)
 
     def commit(self):
         pass
