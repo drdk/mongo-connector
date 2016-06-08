@@ -87,6 +87,7 @@ class DocManager(DocManagerBase):
         messages.append(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
+        self.write_last_doc_timestamp(timestamp)
 
     @wrap_exceptions
     def upsert(self, doc, namespace, timestamp):
@@ -95,6 +96,7 @@ class DocManager(DocManagerBase):
         messages.append(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
+        self.write_last_doc_timestamp(timestamp)
 
     @wrap_exceptions
     def bulk_upsert(self, docs, namespace, timestamp):
@@ -106,9 +108,11 @@ class DocManager(DocManagerBase):
                 messages.extend(batch)
                 jsonmessages = json.dumps(messages, default=json_util.default)
                 self._send_upsert(jsonmessages)
+                self.write_last_doc_timestamp(timestamp)
                 batch = list(next(jsondocs) for i in range(self.chunk_size))
         else:
             self._send_upsert(jsondocs)
+            self.write_last_doc_timestamp(timestamp)
 
     @wrap_exceptions
     def remove(self, document_id, namespace, timestamp):
@@ -117,6 +121,13 @@ class DocManager(DocManagerBase):
         messages.append(message)
         jsonmessages = json.dumps(messages, default=json_util.default)
         self._send_upsert(jsonmessages)
+        self.write_last_doc_timestamp(timestamp)
+
+    def write_last_doc_timestamp(self, timestamp):
+        with open('generic_http_doc_manager_maxtouched', 'w') as progress_file:
+            data = progress_file.readlines()
+			data[0] = timestamp
+			progress_file.writelines(data)			
 
     def commit(self):
         pass
