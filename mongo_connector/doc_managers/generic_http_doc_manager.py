@@ -28,6 +28,7 @@ import os
 from datetime import datetime
 from threading import Timer
 from bson import json_util
+from iron_mq import *
 
 from mongo_connector import errors
 from mongo_connector.compat import u
@@ -57,11 +58,10 @@ class DocManager(DocManagerBase):
 
     def __init__(self, url, chunk_size, auto_commit_interval=DEFAULT_COMMIT_INTERVAL, unique_key='_id', **kwargs):
  
+        self.ironmq = IronMQ(host='mq-aws-eu-west-1-1.iron.io',
+                project_id='58245610bccbd80006c37ca8',
+                token='fwkpuqyI3myiZI469Nfi')
         self.unique_key = unique_key
-        self.url = url
-        self.connection = httplib.HTTPConnection(self.url)
-        self.headers = {'Content-type': 'application/json'}
-
         self.auto_commit_interval = auto_commit_interval
         self.unique_key = unique_key
         self.chunk_size = chunk_size
@@ -174,10 +174,5 @@ class DocManager(DocManagerBase):
         return message
 
     def _send_upsert(self, json):
-        self.connection.connect()
-        self.connection.request('POST', '/od-changelog-in/api', json, self.headers)
-        response = self.connection.getresponse()
-        if response.status == 500:
-            LOG.exception(response.msg)
-        r = response.read()
-        self.connection.close()
+        queue = ironmq.queue('test')
+        queue.post(json)
